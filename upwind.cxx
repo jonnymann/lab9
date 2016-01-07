@@ -1,4 +1,3 @@
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -10,19 +9,26 @@ void writeToFile(const double* const u, const string s, const double dx,
                  const double xmin, const int N);
 void initialize(double* const u, const double dx, const double xmin,
                 const int N);
+void step(double* u, double* u_alt,double C, int N)
+{
+	for(int i=1;i<N;i++){
+		u[i]=-C*(u_alt[i]-u_alt[i-1])+u_alt[i];
+	}
+}
 //---------------------------------------
 int main(){
 
-  const double tEnd = ;
-  const double V = ;
+  const double tEnd = 5.;
+  const double V = 1.;
 
-  const int N  = ;
+  const int N  = 256;
   const double xmin = -10;
   const double xmax =  10;
   const double dx = (xmax-xmin)/(N-1);
-  double dt = ;
+  double dt = 0.1;
   const int Na = 10; // Number of output files up to tEnd
   const int Nk = int(tEnd/Na/dt);
+  double C = V*dt/dx;
 
   double* u0 = new double[N];
   double* u1 = new double[N];
@@ -38,8 +44,10 @@ int main(){
   {
    for(int j=0; j<Nk; j++){
 
-      // Put call to step function here
-
+		step(u1,u0,C,N);
+		h=u0;
+		u0=u1;
+		u1=h;
       // swap arrays u0 <-> u1,
       // however do not copy values, be more clever ;)
    }
